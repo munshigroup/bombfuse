@@ -26,13 +26,13 @@ def timeout(sec, func = None, *args, **kwargs):
     def timeout_thread():
         timed_out = False
         try:
-            # not using time.sleep()...why? because KThread.kill() won't do shit if the thread is blocked by a syscall
             t0 = time.time()
             while True:
                 t1 = time.time()
                 if t1 - t0 >= sec:
                     timed_out = True
                     break
+                time.sleep(0.2)
         finally:
             if timed_out == True:
                 thread.interrupt_main()
@@ -48,7 +48,7 @@ def timeout(sec, func = None, *args, **kwargs):
         except Exception as e:
             raise e
         finally:
-            if y.isAlive() == True:
+            while y.isAlive() == True:
                 y.kill()
                 y.join()
             
