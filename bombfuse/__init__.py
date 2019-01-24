@@ -10,6 +10,7 @@ name = "bombfuse"
 
 def timeout(sec, func = None, *args, **kwargs):
     """Executes a function, raising a KeyboardInterrupt exception in the main thread after sec seconds have elapsed"""
+    # WARNING: Using timeout() may introduce instability within your programs.  Use at your own risk!
     
     def timeout_thread():
         for i in range(0, sec):
