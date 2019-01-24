@@ -1,51 +1,56 @@
+import exceptions
 import kthread
 try:
 	import thread
 except ImportError:
 	import _thread as thread
-import threading
 import time
 
 name = "bombfuse"
 
+class TimeoutError(exceptions.KeyboardInterrupt):
+    def __init__(self, func = None):
+        self.func = func
+        super(TimeoutError, self).__init__()
+            
+    def __str__(self):
+        if self.func is not None:
+            return "The function '{}' timed out".format(self.func.__name__)
+        else:
+            return "The function timed out"
+
 def timeout(sec, func = None, *args, **kwargs):
-    """Executes a function, raising a KeyboardInterrupt exception in the main thread after sec seconds have elapsed"""
+    """Executes a function, raising an exception in the main thread after sec seconds have elapsed"""
     # WARNING: Using timeout() may introduce instability within your programs.  Use at your own risk!
-    
+
     def timeout_thread():
-        for i in range(0, sec):
-            time.sleep(1)
-        thread.interrupt_main()
+        timed_out = False
+        try:
+            # not using time.sleep()...why? because KThread.kill() won't do shit if the thread is blocked by a syscall
+            t0 = time.time()
+            while True:
+                t1 = time.time()
+                if t1 - t0 >= sec:
+                    timed_out = True
+                    break
+        finally:
+            if timed_out == True:
+                thread.interrupt_main()
+            else:
+                thread.exit()
         
     def timeout_block():
-        ret = None
         try:
             y = kthread.KThread(target = timeout_thread)
             y.daemon = True
             y.start()
-            if func is not None:
-                ret = func(*args, **kwargs)
-                if y.isAlive() == True:
-                    try:
-                        y.kill()
-                    except Exception as e:
-                        # thread already stopped?
-                        pass
-                return ret
-            else:
-                if y.isAlive() == True:
-                    try:
-                        y.kill()
-                    except Exception as e:
-                        # thread already stopped?
-                        pass
+            return func(*args, **kwargs)
+        except Exception as e:
+            raise e
         finally:
             if y.isAlive() == True:
-                try:
-                    y.kill()
-                except Exception as e:
-                    pass
-            return ret
+                y.kill()
+                y.join()
             
     if sec is None or sec == 0:
         if func is not None:
@@ -53,4 +58,10 @@ def timeout(sec, func = None, *args, **kwargs):
         else:
             return None
             
-    return timeout_block()
+    try:
+        return timeout_block()
+    except KeyboardInterrupt as e:
+        e = TimeoutError(func)
+        raise e
+    except Exception as e:
+        raise e
