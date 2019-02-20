@@ -5,7 +5,7 @@ with open("README.md", "r") as fd:
 
 setuptools.setup(
     name="bombfuse",
-    version="0.2.1",
+    version="0.3",
     author="The Munshi Group",
     author_email="support@munshigroup.com",
     description="Specify a timeout with any given function",
@@ -15,6 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires = ['kthread'],
     classifiers=[
+        "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 2",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
