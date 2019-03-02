@@ -1,4 +1,3 @@
-import exceptions
 import kthread
 try:
 	import thread
@@ -8,7 +7,7 @@ import time
 
 name = "bombfuse"
 
-class TimeoutError(exceptions.KeyboardInterrupt):
+class TimeoutError(KeyboardInterrupt):
     def __init__(self, func = None):
         self.func = func
         super(TimeoutError, self).__init__()
@@ -21,8 +20,7 @@ class TimeoutError(exceptions.KeyboardInterrupt):
 
 def timeout(sec, func = None, *args, **kwargs):
     """Executes a function, raising an exception in the main thread after sec seconds have elapsed"""
-    # WARNING: Using timeout() may introduce instability within your programs.  Use at your own risk!
-
+    
     def timeout_thread():
         timed_out = False
         try:
