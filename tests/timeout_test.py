@@ -1,3 +1,4 @@
+import sys
 import time
 import unittest
 
@@ -19,7 +20,7 @@ class TimeoutTestCase(unittest.TestCase):
         retval = None
         try:
             # wait for 10 seconds as function waits 5 seconds
-            retval = timeout(10, test_func, 5)
+            retval = timeout(10, test_func, seconds = 5)
         except TimeoutError as e:
             retval = None
         self.assertIsNotNone(retval, "test_func did not return expected value")
@@ -30,7 +31,7 @@ class TimeoutExpiredTestCase(unittest.TestCase):
         retval = None
         try:
             # wait for 5 seconds as function waits 10 seconds
-            retval = timeout(5, test_func, 10)
+            retval = timeout(5, test_func, seconds = 10)
         except TimeoutError as e:
             retval = None
         self.assertIsNone(retval, "test_func failed to time out")
