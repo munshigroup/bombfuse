@@ -10,8 +10,12 @@ def sleep_for(seconds):
         time.sleep(1)
         secs += 1
         
-def test_func(seconds):
-    sleep_for(seconds)
+def test_case_func():
+    sleep_for(5)
+    return "completed"
+    
+def expired_test_case_func():
+    sleep_for(10)
     return "completed"
     
 class TimeoutTestCase(unittest.TestCase):
@@ -20,10 +24,10 @@ class TimeoutTestCase(unittest.TestCase):
         retval = None
         try:
             # wait for 10 seconds as function waits 5 seconds
-            retval = timeout(10, test_func, seconds = 5)
+            retval = timeout(10, test_case_func)
         except TimeoutError as e:
             retval = None
-        self.assertIsNotNone(retval, "test_func did not return expected value")
+        self.assertIsNotNone(retval, "function did not return expected value")
         
 class TimeoutExpiredTestCase(unittest.TestCase):
     # expiry case
@@ -31,10 +35,10 @@ class TimeoutExpiredTestCase(unittest.TestCase):
         retval = None
         try:
             # wait for 5 seconds as function waits 10 seconds
-            retval = timeout(5, test_func, seconds = 10)
+            retval = timeout(5, expired_test_case_func)
         except TimeoutError as e:
             retval = None
-        self.assertIsNone(retval, "test_func failed to time out")
+        self.assertIsNone(retval, "function failed to time out")
 
 if __name__ == '__main__':
     unittest.main()
