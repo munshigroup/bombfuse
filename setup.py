@@ -17,7 +17,7 @@ with open("README.md", "r") as fd:
 
 setuptools.setup(
     name="bombfuse",
-    version="0.3.2",
+    version="0.3.3",
     author="The Munshi Group",
     author_email="support@munshigroup.com",
     description="Specify a timeout with any given function",

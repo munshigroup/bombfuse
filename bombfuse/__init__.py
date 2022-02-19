@@ -46,7 +46,7 @@ def timeout(sec, func = None, *args, **kwargs):
         except Exception as e:
             raise e
         finally:
-            while y.isAlive() == True:
+            while y.is_alive() == True:
                 y.kill()
                 y.join()
             
